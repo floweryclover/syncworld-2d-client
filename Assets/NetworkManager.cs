@@ -1,69 +1,55 @@
+using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
+using SyncWorld2DProtocol;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class NetworkManager : MonoBehaviour
+public partial class NetworkManager : MonoBehaviour
 {
-    private static NetworkManager _singleton = null;
-    public static NetworkManager Instance => _singleton;
+    private static NetworkManager _singleton;
 
-    private readonly object _networkThreadLock = new object();
-    private Thread _networkThread;
+    private TcpClient _tcpClient;
+    private RingBuffer _receiveRingBuffer;
+    private RingBuffer _sendRingBuffer;
+    private Handler _handler;
     
     private void Start()
     {
         Assert.IsNull(_singleton );
         _singleton = this;
+        _receiveRingBuffer = new RingBuffer(Protocol.MaxMessageSize * 1024);
+        _sendRingBuffer = new RingBuffer(Protocol.MaxMessageSize * 1024);
+        _handler = new Handler();
         
         ConnectToServer("127.0.0.1", 31415);
     }
 
-    public void ConnectToServer(string serverAddress, int serverPort)
+    private void ConnectToServer(string serverAddress, int serverPort)
     {
-        lock (_networkThreadLock)
+        if (_tcpClient != null)
         {
-            if (_networkThread != null)
-            {
-                return;
-            }
-            _networkThread = new Thread(() => NetworkThreadBody(serverAddress, serverPort))
-            {
-                Name = "NetworkThread"
-            };
-            _networkThread.Start();
+            throw new InvalidOperationException("이미 TCP클라이언트 객체가 존재합니다.");
         }
-    }
-
-    // 이하 NetworkThread 메소드
-    private void NetworkThreadBody(string serverAddress, int serverPort)
-    {
-        var tcpClient = new TcpClient();
-        var ipAddress = IPAddress.Parse(serverAddress);
-        try
-        {
-            tcpClient.Connect(ipAddress, serverPort);
-            Debug.Log("접속 성공!");
-        }
-        catch (SocketException e)
-        {
-            Debug.LogError(e.Message);
-        }
-        finally
-        {
-            tcpClient.Close();
-            tcpClient.Dispose();
-
-            lock (_networkThreadLock)
-            {
-                _networkThread = null;
-            }
-        }
-    }
-
-    private void NetworkIoLoop()
-    {
         
+        _receiveRingBuffer.Clear();
+        _sendRingBuffer.Clear();
+        _tcpClient = new TcpClient();
+        var ipAddress = IPAddress.Parse(serverAddress);
+        _tcpClient.Connect(ipAddress, serverPort);
+    }
+
+    private void Update()
+    {
+        ProcessReceive();
+        ProcessSend();
+    }
+
+    private void OnApplicationQuit()
+    {
+        if (_tcpClient != null)
+        {
+            _tcpClient.Close();
+        }
     }
 }

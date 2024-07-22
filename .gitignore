@@ -12,8 +12,8 @@
 /[Bb]uilds/
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
-/Assets/[Pp]lugins/
-
+/[Aa]ssets/[Pp]lugins/
+/[Aa]ssets/[Pp]ackages/
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
 /[Mm]emoryCaptures/

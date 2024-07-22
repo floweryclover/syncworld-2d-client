@@ -1,5 +1,19 @@
 {
   "dependencies": {
+    "com.cysharp.memorypack": {
+      "version": "https://github.com/Cysharp/MemoryPack.git?path=src/MemoryPack.Unity/Assets/MemoryPack.Unity",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "4b1e3f889fbc8bae6e700bc148f6dbba0a4b7170"
+    },
+    "com.github-glitchenzo.nugetforunity": {
+      "version": "https://github.com/GlitchEnzo/NuGetForUnity.git?path=/src/NuGetForUnity",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "698989e1642d269c3c7a015077ad8d2bae7c739a"
+    },
     "com.unity.2d.animation": {
       "version": "9.1.1",
       "depth": 1,
