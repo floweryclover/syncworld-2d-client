@@ -3,13 +3,16 @@ using UnityEngine;
 
 public partial class NetworkManager
 {
-    private class Handler : IStcHandler
+    public GameObject playerPrefab;
+    public bool OnSpawnEntity(uint entityId, float x, float y)
     {
-        public bool OnHelloClient(string message)
-        {
-            Debug.Log(message);
-            return true;
-        }
+        Instantiate(playerPrefab, new Vector2(x, y), Quaternion.identity);
+        return true;
+    }
+
+    public bool OnDespawnEntity(uint entityId)
+    {
+        return true;
     }
 
     private void ProcessReceive()
@@ -21,6 +24,6 @@ public partial class NetworkManager
 
         var receivedSize = _tcpClient.Client.Receive(_receiveRingBuffer.WritableOnceSpan);
         _receiveRingBuffer.UpdateWritten(receivedSize);
-        (_handler as IStcHandler).Handle(_receiveRingBuffer);
+        (this as IStcHandler).Handle(_receiveRingBuffer);
     }
 }

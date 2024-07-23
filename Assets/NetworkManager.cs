@@ -2,17 +2,17 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using SyncWorld2DProtocol;
+using SyncWorld2DProtocol.Stc;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public partial class NetworkManager : MonoBehaviour
+public partial class NetworkManager : MonoBehaviour, IStcHandler
 {
     private static NetworkManager _singleton;
 
     private TcpClient _tcpClient;
     private RingBuffer _receiveRingBuffer;
     private RingBuffer _sendRingBuffer;
-    private Handler _handler;
     
     private void Start()
     {
@@ -20,7 +20,6 @@ public partial class NetworkManager : MonoBehaviour
         _singleton = this;
         _receiveRingBuffer = new RingBuffer(Protocol.MaxMessageSize * 1024);
         _sendRingBuffer = new RingBuffer(Protocol.MaxMessageSize * 1024);
-        _handler = new Handler();
         
         ConnectToServer("127.0.0.1", 31415);
     }
