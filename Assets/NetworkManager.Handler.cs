@@ -3,15 +3,15 @@ using UnityEngine;
 
 public partial class NetworkManager
 {
-    public GameObject playerPrefab;
     public bool OnSpawnEntity(uint entityId, float x, float y)
     {
-        Instantiate(playerPrefab, new Vector2(x, y), Quaternion.identity);
+        EntityManager.SpawnEntity(entityId, new Vector2(x, y));
         return true;
     }
 
     public bool OnDespawnEntity(uint entityId)
     {
+        EntityManager.DespawnEntity(entityId);
         return true;
     }
 
