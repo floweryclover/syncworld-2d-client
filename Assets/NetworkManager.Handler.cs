@@ -15,6 +15,18 @@ public partial class NetworkManager
         return true;
     }
 
+    public bool OnPossessEntity(uint entityId)
+    {
+        EntityManager.PossessEntity(entityId);
+        return true;
+    }
+
+    public bool OnUnpossessEntity()
+    {
+        EntityManager.UnpossessEntity();
+        return true;
+    }
+
     private void ProcessReceive()
     {
         if (_tcpClient == null || !_tcpClient.Connected || _tcpClient.Available == 0)
