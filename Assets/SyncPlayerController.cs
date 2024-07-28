@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class SyncPlayerController : MonoBehaviour
@@ -22,6 +23,10 @@ public class SyncPlayerController : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        StartCoroutine(SendCurrentPosition());
+    }
     private void Update()
     {
         if (!_controllingCharacter)
@@ -55,5 +60,17 @@ public class SyncPlayerController : MonoBehaviour
         var newPosition = _controllingCharacter.transform.position;
         newPosition.z = -10.0f;
         transform.position = newPosition;
+    }
+
+    private IEnumerator SendCurrentPosition()
+    {
+        while (true)
+        {
+            if (_controllingCharacter)
+            {
+                NetworkManager.SendCurrentPosition(_controllingCharacter.transform.position.x, _controllingCharacter.transform.position.y);     
+            }
+            yield return new WaitForSeconds(0.5f);
+        }
     }
 }

@@ -20,9 +20,16 @@ public partial class NetworkManager
         _sendRingBuffer.UpdateRead(sentSize);
     }
 
-    public void RequestJoin()
+    public static void RequestJoin()
     {
         var message = new RequestJoinMessage();
-        Serializer.TrySerializeTo(_headerSerializationBuffer, Protocol.CtsRequestJoin, ref message, _sendRingBuffer);
+        Serializer.TrySerializeTo(_singleton._headerSerializationBuffer, Protocol.CtsRequestJoin, ref message, _singleton._sendRingBuffer);
+    }
+
+    public static void SendCurrentPosition(float x, float y)
+    {
+        var message = new SendCurrentPositionMessage() { X = x, Y = y };
+        Serializer.TrySerializeTo(_singleton._headerSerializationBuffer, Protocol.CtsSendCurrentPosition, ref message,
+            _singleton._sendRingBuffer);
     }
 }

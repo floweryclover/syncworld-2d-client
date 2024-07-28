@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -9,21 +10,23 @@ public class EntityManager : MonoBehaviour
     
     public GameObject playerPrefab;
     
-    private Dictionary<uint, GameObject> _entities;
+    private Dictionary<uint, ISyncControllable> _entities;
     private SyncPlayerController _syncPlayerController;
 
     private void Start()
     {
         Assert.IsNull(_singleton);
         _singleton = this;
-        _entities = new Dictionary<uint, GameObject>();
+        _entities = new Dictionary<uint, ISyncControllable>();
         _syncPlayerController = GameObject.Find("SyncPlayerController").GetComponent<SyncPlayerController>();
+        
+        NetworkManager.RequestJoin();
     }
     
     public static void SpawnEntity(uint entityId, Vector2 position)
     { 
         var spawned = Instantiate(_singleton.playerPrefab, position, Quaternion.identity);
-        _singleton._entities.Add(entityId, spawned);
+        _singleton._entities.Add(entityId, spawned.ConvertTo<ISyncControllable>());
     }
 
     public static void DespawnEntity(uint entityId)
@@ -33,7 +36,7 @@ public class EntityManager : MonoBehaviour
             return;
         }
         
-        Destroy(entity);
+        Destroy(entity.ConvertTo<GameObject>());
     }
 
     public static void PossessEntity(uint entityId)
@@ -43,7 +46,7 @@ public class EntityManager : MonoBehaviour
             throw new InvalidDataException($"Entity {entityId}(을)를 찾을 수 없습니다.");
         }
 
-        var syncPlayerCharacterComponent = entity.GetComponent<SyncPlayerCharacter>();
+        var syncPlayerCharacterComponent = entity.ConvertTo<GameObject>().GetComponent<SyncPlayerCharacter>();
         if (syncPlayerCharacterComponent == null)
         {
             Debug.LogError($"Entity {entityId}(은)는 SyncPlayerCharacter가 아니므로 빙의할 수 없습니다.");
@@ -58,8 +61,28 @@ public class EntityManager : MonoBehaviour
     {
         if (_singleton._syncPlayerController.TryGetCharacter(out var character))
         {
+            character.GetComponent<SpriteRenderer>().color = Color.white;
             character.DetachController();
         }
         _singleton._syncPlayerController.DetachCharacter();
+    }
+
+    public static void MoveEntity(uint entityId, float x, float y)
+    {
+        if (!_singleton._entities.TryGetValue(entityId, out var entity))
+        {
+            return;
+        }
+        
+        entity.MoveTo(x, y);
+    }
+
+    public static void AssignEntityColor(uint entityId, float r, float g, float b)
+    {
+        if (!_singleton._entities.TryGetValue(entityId, out var entity))
+        {
+            return;
+        }
+        entity.ConvertTo<GameObject>().GetComponent<SpriteRenderer>().color = new Color(r, g, b);
     }
 }

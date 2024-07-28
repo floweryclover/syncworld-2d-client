@@ -27,6 +27,18 @@ public partial class NetworkManager
         return true;
     }
 
+    public bool OnMoveEntity(uint entityId, float x, float y)
+    {
+        EntityManager.MoveEntity(entityId, x, y);
+        return true;
+    }
+
+    public bool OnAssignEntityColor(uint entityId, float r, float g, float b)
+    {
+        EntityManager.AssignEntityColor(entityId, r, g, b);
+        return true;
+    }
+
     private void ProcessReceive()
     {
         if (_tcpClient == null || !_tcpClient.Connected || _tcpClient.Available == 0)
