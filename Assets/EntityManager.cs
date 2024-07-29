@@ -10,14 +10,14 @@ public class EntityManager : MonoBehaviour
     
     public GameObject playerPrefab;
     
-    private Dictionary<uint, ISyncControllable> _entities;
+    private Dictionary<uint, SyncPlayerCharacter> _entities;
     private SyncPlayerController _syncPlayerController;
 
     private void Start()
     {
         Assert.IsNull(_singleton);
         _singleton = this;
-        _entities = new Dictionary<uint, ISyncControllable>();
+        _entities = new Dictionary<uint, SyncPlayerCharacter>();
         _syncPlayerController = GameObject.Find("SyncPlayerController").GetComponent<SyncPlayerController>();
         
         NetworkManager.RequestJoin();
@@ -26,7 +26,7 @@ public class EntityManager : MonoBehaviour
     public static void SpawnEntity(uint entityId, Vector2 position)
     { 
         var spawned = Instantiate(_singleton.playerPrefab, position, Quaternion.identity);
-        _singleton._entities.Add(entityId, spawned.ConvertTo<ISyncControllable>());
+        _singleton._entities.Add(entityId, spawned.GetComponent<SyncPlayerCharacter>());
     }
 
     public static void DespawnEntity(uint entityId)

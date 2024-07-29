@@ -26,9 +26,9 @@ public partial class NetworkManager
         Serializer.TrySerializeTo(_singleton._headerSerializationBuffer, Protocol.CtsRequestJoin, ref message, _singleton._sendRingBuffer);
     }
 
-    public static void SendCurrentPosition(float x, float y)
+    public static void SendCurrentPosition(float positionX, float positionY, float velocityX, float velocityY, float accelerationX, float accelerationY)
     {
-        var message = new SendCurrentPositionMessage() { X = x, Y = y };
+        var message = new SendCurrentPositionMessage() { PositionX = positionX, PositionY = positionY, VelocityX = velocityX, VelocityY = velocityY, AccelerationX = accelerationX, AccelerationY = accelerationY};
         Serializer.TrySerializeTo(_singleton._headerSerializationBuffer, Protocol.CtsSendCurrentPosition, ref message,
             _singleton._sendRingBuffer);
     }

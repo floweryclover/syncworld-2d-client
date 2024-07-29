@@ -68,7 +68,13 @@ public class SyncPlayerController : MonoBehaviour
         {
             if (_controllingCharacter)
             {
-                NetworkManager.SendCurrentPosition(_controllingCharacter.transform.position.x, _controllingCharacter.transform.position.y);     
+                NetworkManager.SendCurrentPosition(
+                    _controllingCharacter.transform.position.x,
+                    _controllingCharacter.transform.position.y,
+                    _controllingCharacter.Rigidbody.velocity.x,
+                    _controllingCharacter.Rigidbody.velocity.y,
+                    _controllingCharacter.Acceleration.x,
+                    _controllingCharacter.Acceleration.y);     
             }
             yield return new WaitForSeconds(0.5f);
         }
