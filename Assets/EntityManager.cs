@@ -85,4 +85,13 @@ public class EntityManager : MonoBehaviour
         }
         entity.ConvertTo<GameObject>().GetComponent<SpriteRenderer>().color = new Color(r, g, b);
     }
+
+    public static void TeleportEntity(uint entityId, float x, float y)
+    {
+        if (!_singleton._entities.TryGetValue(entityId, out var entity))
+        {
+            return;
+        }
+        entity.Teleport(x, y);
+    }
 }

@@ -20,10 +20,24 @@ public class SyncPlayerCharacter : MonoBehaviour
         _elapsedTime = 0.0f;
     }
 
+    public void Teleport(float x, float y)
+    {
+        if (_controller == null)
+        {
+            _beginPosition = new Vector2(x, y);
+            _targetPosition = new Vector2(x, y);
+            _elapsedTime = 0.0f;
+
+        }
+        else
+        {
+            transform.position = new Vector2(x, y);
+        }
+    }
+    
     public void AttachController(SyncPlayerController controller)
     {
         _controller = controller;
-        Debug.Log(Rigidbody == null);
         Rigidbody.gravityScale = 1.0f;
         _capsuleCollider2D.enabled = true;
     }

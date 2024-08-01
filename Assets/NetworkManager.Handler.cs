@@ -39,6 +39,12 @@ public partial class NetworkManager
         return true;
     }
 
+    public bool OnTeleportEntity(uint entityId, float x, float y)
+    {
+        EntityManager.TeleportEntity(entityId, x, y);
+        return true;
+    }
+
     private void ProcessReceive()
     {
         if (_tcpClient == null || !_tcpClient.Connected || _tcpClient.Available == 0)
