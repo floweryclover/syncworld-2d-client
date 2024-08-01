@@ -76,7 +76,7 @@ public class SyncPlayerController : MonoBehaviour
                     _controllingCharacter.Acceleration.x,
                     _controllingCharacter.Acceleration.y);     
             }
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.1f);
         }
     }
 }

@@ -5,6 +5,7 @@ public class SyncPlayerCharacter : MonoBehaviour
     private SyncPlayerController _controller;
     public Rigidbody2D Rigidbody { get; private set; }
 
+    private CapsuleCollider2D _capsuleCollider2D;
     private Vector2 _beginPosition;
     private Vector2 _targetPosition;
     private float _elapsedTime;
@@ -18,13 +19,28 @@ public class SyncPlayerCharacter : MonoBehaviour
         _targetPosition = new Vector2(x, y);
         _elapsedTime = 0.0f;
     }
-    
-    public void AttachController(SyncPlayerController controller) => _controller = controller;
-    public void DetachController() => _controller = null;
 
-    private void Start()
+    public void AttachController(SyncPlayerController controller)
+    {
+        _controller = controller;
+        Debug.Log(Rigidbody == null);
+        Rigidbody.gravityScale = 1.0f;
+        _capsuleCollider2D.enabled = true;
+    }
+
+    public void DetachController()
+    {
+        _controller = null;
+        Rigidbody.gravityScale = 0.0f;
+        _capsuleCollider2D.enabled = false;
+    }
+
+    private void Awake()
     {
         Rigidbody = gameObject.GetComponent<Rigidbody2D>();
+        Rigidbody.gravityScale = 0.0f;
+        _capsuleCollider2D = gameObject.GetComponent<CapsuleCollider2D>();
+        _capsuleCollider2D.enabled = false;
         _targetPosition = Vector2.zero;
     }
 
@@ -39,12 +55,12 @@ public class SyncPlayerCharacter : MonoBehaviour
         }
         
         _elapsedTime += Time.deltaTime;
-        if (_elapsedTime > 0.5f)
+        if (_elapsedTime > 0.1f)
         {
             transform.position = _targetPosition;
             return;
         }
-        var lerpedPosition = Vector2.Lerp(_beginPosition, _targetPosition, _elapsedTime / 0.5f);
+        var lerpedPosition = Vector2.Lerp(_beginPosition, _targetPosition, _elapsedTime / 0.1f);
         transform.position = lerpedPosition;
     }
 }
