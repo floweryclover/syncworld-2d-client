@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class SyncPlayerCharacter : MonoBehaviour
+public class SyncPlayerCharacter : MonoBehaviour, IMoveableEntity
 {
     private SyncPlayerController _controller;
     public Rigidbody2D Rigidbody { get; private set; }

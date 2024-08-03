@@ -3,9 +3,9 @@ using UnityEngine;
 
 public partial class NetworkManager
 {
-    public bool OnSpawnEntity(uint entityId, float x, float y)
+    public bool OnSpawnEntity(uint entityId, uint entityType, float x, float y)
     {
-        EntityManager.SpawnEntity(entityId, new Vector2(x, y));
+        EntityManager.SpawnEntity(entityId, entityType, new Vector2(x, y));
         return true;
     }
 

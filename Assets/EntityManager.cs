@@ -4,29 +4,45 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Assertions;
 
+internal interface IMoveableEntity
+{
+    void MoveTo(float x, float y);
+    void Teleport(float x, float y);
+}
+
 public class EntityManager : MonoBehaviour
 {
     private static EntityManager _singleton;
     
     public GameObject playerPrefab;
+    public GameObject soccerballPrefab;
     
-    private Dictionary<uint, SyncPlayerCharacter> _entities;
+    private Dictionary<uint, GameObject> _entities;
+    private Dictionary<uint, IMoveableEntity> _entityMovable;
     private SyncPlayerController _syncPlayerController;
 
     private void Start()
     {
         Assert.IsNull(_singleton);
         _singleton = this;
-        _entities = new Dictionary<uint, SyncPlayerCharacter>();
+        _entities = new Dictionary<uint, GameObject>();
+        _entityMovable = new Dictionary<uint, IMoveableEntity>();
         _syncPlayerController = GameObject.Find("SyncPlayerController").GetComponent<SyncPlayerController>();
         
         NetworkManager.RequestJoin();
     }
     
-    public static void SpawnEntity(uint entityId, Vector2 position)
-    { 
-        var spawned = Instantiate(_singleton.playerPrefab, position, Quaternion.identity);
-        _singleton._entities.Add(entityId, spawned.GetComponent<SyncPlayerCharacter>());
+    public static void SpawnEntity(uint entityId, uint entityType, Vector2 position)
+    {
+        var prefab = entityType == 2 ? _singleton.playerPrefab : _singleton.soccerballPrefab;
+        var spawned = Instantiate(prefab, position, Quaternion.identity);
+        _singleton._entities.Add(entityId, spawned);
+        
+        var moveable = spawned.ConvertTo<IMoveableEntity>();
+        if (moveable != null)
+        {
+            _singleton._entityMovable.Add(entityId, moveable);
+        }
     }
 
     public static void DespawnEntity(uint entityId)
@@ -37,6 +53,8 @@ public class EntityManager : MonoBehaviour
         }
         
         Destroy(entity.ConvertTo<GameObject>());
+        _singleton._entityMovable.Remove(entityId);
+        _singleton._entities.Remove(entityId);
     }
 
     public static void PossessEntity(uint entityId)
@@ -69,12 +87,12 @@ public class EntityManager : MonoBehaviour
 
     public static void MoveEntity(uint entityId, float x, float y)
     {
-        if (!_singleton._entities.TryGetValue(entityId, out var entity))
+        if (!_singleton._entityMovable.TryGetValue(entityId, out var moveableEntity))
         {
             return;
         }
         
-        entity.MoveTo(x, y);
+        moveableEntity.MoveTo(x, y);
     }
 
     public static void AssignEntityColor(uint entityId, float r, float g, float b)
@@ -88,10 +106,10 @@ public class EntityManager : MonoBehaviour
 
     public static void TeleportEntity(uint entityId, float x, float y)
     {
-        if (!_singleton._entities.TryGetValue(entityId, out var entity))
+        if (!_singleton._entityMovable.TryGetValue(entityId, out var moveableEntity))
         {
             return;
         }
-        entity.Teleport(x, y);
+        moveableEntity.Teleport(x, y);
     }
 }
